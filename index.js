@@ -12,12 +12,12 @@ app.get('/', (req, res) => {
 app.use(cors());
 app.use(express.json())
 
-const users = [
-    { id: 1, name: 'Naim Hasan', email: 'naim@gmail.com' },
-    { id: 2, name: 'Tanvir', email: 'tanvir@gmail.com' },
-    { id: 3, name: 'Mokter', email: 'mokter@gmail.com' },
-    { id: 4, name: 'Ahamed', email: 'ahamed@gmail.com' },
-];
+// const users = [
+//     { id: 1, name: 'Naim Hasan', email: 'naim@gmail.com' },
+//     { id: 2, name: 'Tanvir', email: 'tanvir@gmail.com' },
+//     { id: 3, name: 'Mokter', email: 'mokter@gmail.com' },
+//     { id: 4, name: 'Ahamed', email: 'ahamed@gmail.com' },
+// ];
 
 
 //MongoDB DATABASE
@@ -36,7 +36,12 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         const userCollection = client.db('simpleNode').collection('user');
-        const user = { name: 'Naim Hasan', email: 'naimhasan@gmail.com' }
+        // const user = { name: 'Naim Hasan', email: 'naimhasan@gmail.com' }
+        app.get('/user', async (req, res) => {
+            const cursor = userCollection.find({})
+            const user = await cursor.toArray();
+            res.send(user)
+        })
 
 
         app.post('/user', async (req, res) => {
@@ -45,7 +50,7 @@ async function run() {
             const result = await userCollection.insertOne(user)
             console.log(result);
 
-            user.id = result.insertedId;
+            user._id = result.insertedId;
             res.send(user)
         })
 
@@ -64,18 +69,18 @@ run().catch(console.dir);
 
 
 
-app.get('/user', (req, res) => {
-    if (req.query.name) {
-        const search = req.query.name;
-        const filtered = users.filter(usr => usr.name.toLowerCase().indexOf(search) >= 0)
-        res.send(filtered);
+// app.get('/user', (req, res) => {
+//     if (req.query.name) {
+//         const search = req.query.name;
+//         const filtered = users.filter(usr => usr.name.toLowerCase().indexOf(search) >= 0)
+//         res.send(filtered);
 
-    }
-    else {
-        res.send(users);
-    }
+//     }
+//     else {
+//         res.send(users);
+//     }
 
-})
+// })
 
 // app.post('/user', (req, res) => {
 //     console.log('Post API Called')
